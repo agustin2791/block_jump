@@ -1,0 +1,264 @@
+[gd_scene load_steps=16 format=2]
+
+[ext_resource path="res://scenes/HeroBlock.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/Platform.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/BadBlock.tscn" type="PackedScene" id=3]
+[ext_resource path="res://assets/andvari.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://scripts/Stadium.gd" type="Script" id=5]
+[ext_resource path="res://assets/stage_ui_text.tres" type="DynamicFont" id=6]
+[ext_resource path="res://assets/Plateform.png" type="Texture" id=7]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 517, 31 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 10, 324.5 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 10, 325 )
+
+[sub_resource type="DynamicFont" id=8]
+size = 60
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=9]
+size = 40
+extra_spacing_top = 10
+extra_spacing_bottom = 10
+font_data = ExtResource( 4 )
+
+[sub_resource type="StyleBoxFlat" id=10]
+bg_color = Color( 0, 0, 0, 1 )
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color( 0, 0.823529, 0.329412, 1 )
+
+[sub_resource type="Animation" id=6]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("CanvasLayer/Control/Countdown:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=7]
+resource_name = "countdown"
+length = 0.75
+tracks/0/type = "value"
+tracks/0/path = NodePath("CanvasLayer/Control/Countdown:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.7 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
+
+[node name="Stadium" type="Node2D"]
+script = ExtResource( 5 )
+
+[node name="Platforms" type="Node2D" parent="."]
+
+[node name="Platform" parent="Platforms" instance=ExtResource( 2 )]
+position = Vector2( 800, 448 )
+
+[node name="Platform2" parent="Platforms" instance=ExtResource( 2 )]
+position = Vector2( 448, 360 )
+
+[node name="Platform5" parent="Platforms" instance=ExtResource( 2 )]
+position = Vector2( 168, 256 )
+
+[node name="Platform3" parent="Platforms" instance=ExtResource( 2 )]
+position = Vector2( 728, 256 )
+
+[node name="Platform4" parent="Platforms" instance=ExtResource( 2 )]
+position = Vector2( 96, 448 )
+
+[node name="Floor_and_walls" type="Node2D" parent="."]
+
+[node name="Plateform" type="Sprite" parent="Floor_and_walls"]
+position = Vector2( -8, 300.775 )
+rotation = 1.5708
+scale = Vector2( 3.29765, 1 )
+texture = ExtResource( 7 )
+
+[node name="Plateform2" type="Sprite" parent="Floor_and_walls"]
+position = Vector2( 1032, 304 )
+rotation = 1.5708
+scale = Vector2( 3.29765, 1 )
+texture = ExtResource( 7 )
+
+[node name="Plateform3" type="Sprite" parent="Floor_and_walls"]
+position = Vector2( 504, 584 )
+scale = Vector2( 5.75, 1 )
+texture = ExtResource( 7 )
+
+[node name="Floor" type="StaticBody2D" parent="Floor_and_walls"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor_and_walls/Floor"]
+position = Vector2( 515, 600 )
+shape = SubResource( 1 )
+
+[node name="W_Wall" type="StaticBody2D" parent="Floor_and_walls"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor_and_walls/W_Wall"]
+position = Vector2( 0, 314.5 )
+shape = SubResource( 2 )
+
+[node name="E_Wall" type="StaticBody2D" parent="Floor_and_walls"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor_and_walls/E_Wall"]
+position = Vector2( 1026, 320 )
+shape = SubResource( 3 )
+
+[node name="HeroBlock" parent="." instance=ExtResource( 1 )]
+position = Vector2( 32, 432 )
+speed = 325.0
+jump_force = -1200.0
+gravity = 4500.0
+
+[node name="BadBlock" parent="." instance=ExtResource( 3 )]
+position = Vector2( 960, 552 )
+speed = 400.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Countdown" type="Label" parent="CanvasLayer/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = SubResource( 8 )
+align = 1
+valign = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -496.0
+margin_right = 496.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+
+[node name="Lives" type="HBoxContainer" parent="CanvasLayer/Control/VBoxContainer"]
+margin_right = 992.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control/VBoxContainer/Lives"]
+margin_right = 461.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+
+[node name="Lives" type="Label" parent="CanvasLayer/Control/VBoxContainer/Lives/HBoxContainer"]
+margin_top = 7.0
+margin_right = 158.0
+margin_bottom = 33.0
+custom_fonts/font = ExtResource( 6 )
+text = "Lives Left: "
+
+[node name="lives_count" type="Label" parent="CanvasLayer/Control/VBoxContainer/Lives/HBoxContainer"]
+margin_left = 162.0
+margin_top = 7.0
+margin_right = 178.0
+margin_bottom = 33.0
+custom_fonts/font = ExtResource( 6 )
+text = "3"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="CanvasLayer/Control/VBoxContainer/Lives"]
+margin_left = 465.0
+margin_right = 527.0
+margin_bottom = 40.0
+
+[node name="minutes" type="Label" parent="CanvasLayer/Control/VBoxContainer/Lives/HBoxContainer3"]
+margin_top = 7.0
+margin_right = 16.0
+margin_bottom = 33.0
+custom_fonts/font = ExtResource( 6 )
+text = "0"
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/VBoxContainer/Lives/HBoxContainer3"]
+margin_left = 20.0
+margin_top = 7.0
+margin_right = 26.0
+margin_bottom = 33.0
+custom_fonts/font = ExtResource( 6 )
+text = ":"
+
+[node name="seconds" type="Label" parent="CanvasLayer/Control/VBoxContainer/Lives/HBoxContainer3"]
+margin_left = 30.0
+margin_top = 7.0
+margin_right = 62.0
+margin_bottom = 33.0
+custom_fonts/font = ExtResource( 6 )
+text = "00"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="CanvasLayer/Control/VBoxContainer/Lives"]
+margin_left = 531.0
+margin_right = 992.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+
+[node name="points" type="Label" parent="CanvasLayer/Control/VBoxContainer/Lives/HBoxContainer2"]
+margin_top = 7.0
+margin_right = 413.0
+margin_bottom = 33.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 6 )
+text = "Points: "
+align = 2
+
+[node name="points_count" type="Label" parent="CanvasLayer/Control/VBoxContainer/Lives/HBoxContainer2"]
+margin_left = 417.0
+margin_top = 7.0
+margin_right = 461.0
+margin_bottom = 33.0
+rect_min_size = Vector2( 44, 0 )
+custom_fonts/font = ExtResource( 6 )
+text = "0"
+
+[node name="BackButton" type="Button" parent="CanvasLayer/Control"]
+pause_mode = 2
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -250.0
+margin_top = -40.0
+margin_right = 250.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 500, 0 )
+custom_fonts/font = SubResource( 9 )
+custom_styles/normal = SubResource( 10 )
+text = "Back"
+
+[node name="CountDown" type="Node2D" parent="CanvasLayer"]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 6 )
+anims/countdown = SubResource( 7 )
+
+[node name="Timer" type="Timer" parent="."]
+
+[connection signal="game_over" from="HeroBlock" to="." method="_on_HeroBlock_game_over"]
+[connection signal="update_countdown" from="HeroBlock" to="." method="_on_HeroBlock_update_countdown"]
+[connection signal="update_lives" from="HeroBlock" to="." method="_on_HeroBlock_update_lives"]
+[connection signal="update_points" from="HeroBlock" to="." method="_on_HeroBlock_update_points"]
+[connection signal="pressed" from="CanvasLayer/Control/BackButton" to="." method="_on_BackButton_pressed"]
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

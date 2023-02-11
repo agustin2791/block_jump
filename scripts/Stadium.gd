@@ -17,18 +17,26 @@ var point = preload("res://scenes/Point.tscn")
 
 var rnd = RandomNumberGenerator.new()
 onready var animation_player = $AnimationPlayer
-
+onready var countdown_player = $CountdownPlayer
+var countdown_fx = load('res://assets/count_down.wav')
 onready var timer = $Timer
 
 var seconds := 0
 var minutes := 0
 
+onready var hero_block = $HeroBlock
+
+var ad_viewed = false
+onready var ad_reward = $AdMob
+onready var ad_timer = $AdTimer
+
 func _ready():
 	rnd.randomize()
 	AddNewPoint()
 	timer.start()
+	ad_reward.load_rewarded_video()
 	
-func AddNewPoint():
+func AddNewPoint(total_points := 0):
 	rnd.randomize()
 	var new_point = rnd.randi_range(0, 7)
 	
@@ -37,6 +45,8 @@ func AddNewPoint():
 	print(new_point)
 	var add_point = point.instance()
 	add_point.global_position = point_locations[new_point]
+	if total_points != 0 and total_points == $"/root/Global".last_best_score:
+		add_point.modulate = '#faf73c'
 	add_child(add_point)
 	last_point_pos = new_point
 
@@ -57,12 +67,14 @@ func _on_HeroBlock_update_lives(lives):
 func _on_HeroBlock_update_points(points):
 	print('setting points')
 	UpdatePointsUI(points)
-	AddNewPoint()
+	AddNewPoint(points)
 
 
 func _on_HeroBlock_update_countdown(count):
 	UpdateCountdownUI(count)
 	animation_player.play("countdown")
+	countdown_player.stream = countdown_fx
+	countdown_player.play()
 
 
 func _on_Timer_timeout():
@@ -81,4 +93,33 @@ func _on_BackButton_pressed():
 
 
 func _on_HeroBlock_game_over():
-	get_node("CanvasLayer/Control/BackButton").visible = true
+	ad_viewed = false
+	get_node("CanvasLayer/Control/CenterContainer").visible = true
+	get_node("CanvasLayer/Control/CenterContainer/VBoxContainer/PlayMore").visible = true
+	get_node("CanvasLayer/Control/CenterContainer/VBoxContainer/Continue").visible = false
+
+
+func _on_PlayMore_pressed():
+#	ad_reward.load_rewarded_video()
+	ad_reward.show_rewarded_video()
+	var video_show = ad_reward.is_rewarded_video_loaded()
+
+
+func _on_Continue_pressed():
+	UpdateLivesUI(3)
+	hero_block.lives = 3
+	get_node("CanvasLayer/Control/CenterContainer").visible = false
+	hero_block.ContinuePlay()
+
+func _on_AdMob_rewarded_video_closed():
+	get_node("CanvasLayer/Control/CenterContainer/VBoxContainer/PlayMore").visible = false
+	get_node("CanvasLayer/Control/CenterContainer/VBoxContainer/Continue").visible = true
+	ad_reward.load_rewarded_video()
+
+
+func _on_AdTimer_timeout():
+	ad_viewed = true
+
+
+func _on_CountdownPlayer_finished():
+	countdown_player.stop()

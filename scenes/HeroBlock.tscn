@@ -19,4 +19,12 @@ texture = ExtResource( 1 )
 
 [node name="DropTimer" type="Timer" parent="."]
 
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+bus = "FX"
+
+[node name="Point_fx" type="AudioStreamPlayer2D" parent="."]
+bus = "FX"
+
 [connection signal="timeout" from="DropTimer" to="." method="_on_DropTimer_timeout"]
+[connection signal="finished" from="AudioStreamPlayer2D" to="." method="_on_AudioStreamPlayer2D_finished"]
+[connection signal="finished" from="Point_fx" to="." method="_on_Point_fx_finished"]

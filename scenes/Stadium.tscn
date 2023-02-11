@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://scenes/HeroBlock.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scenes/Platform.tscn" type="PackedScene" id=2]
@@ -7,6 +7,13 @@
 [ext_resource path="res://scripts/Stadium.gd" type="Script" id=5]
 [ext_resource path="res://assets/stage_ui_text.tres" type="DynamicFont" id=6]
 [ext_resource path="res://assets/Plateform.png" type="Texture" id=7]
+[ext_resource path="res://assets/trailer_icon.png" type="Texture" id=8]
+[ext_resource path="res://assets/action_button_after_GO.tres" type="StyleBox" id=9]
+[ext_resource path="res://assets/button_font.tres" type="DynamicFont" id=10]
+[ext_resource path="res://admob-lib/admob.gd" type="Script" id=11]
+
+[sub_resource type="RectangleShape2D" id=11]
+extents = Vector2( 1920, 1080 )
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 517, 31 )
@@ -20,20 +27,6 @@ extents = Vector2( 10, 325 )
 [sub_resource type="DynamicFont" id=8]
 size = 60
 font_data = ExtResource( 4 )
-
-[sub_resource type="DynamicFont" id=9]
-size = 40
-extra_spacing_top = 10
-extra_spacing_bottom = 10
-font_data = ExtResource( 4 )
-
-[sub_resource type="StyleBoxFlat" id=10]
-bg_color = Color( 0, 0, 0, 1 )
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color( 0, 0.823529, 0.329412, 1 )
 
 [sub_resource type="Animation" id=6]
 length = 0.001
@@ -68,6 +61,9 @@ tracks/0/keys = {
 
 [node name="Stadium" type="Node2D"]
 script = ExtResource( 5 )
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="."]
+shape = SubResource( 11 )
 
 [node name="Platforms" type="Node2D" parent="."]
 
@@ -232,20 +228,45 @@ rect_min_size = Vector2( 44, 0 )
 custom_fonts/font = ExtResource( 6 )
 text = "0"
 
-[node name="BackButton" type="Button" parent="CanvasLayer/Control"]
-pause_mode = 2
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/Control"]
 visible = false
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -250.0
-margin_top = -40.0
-margin_right = 250.0
-margin_bottom = 40.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/CenterContainer"]
+margin_left = 262.0
+margin_top = 218.0
+margin_right = 762.0
+margin_bottom = 382.0
+
+[node name="PlayMore" type="Button" parent="CanvasLayer/Control/CenterContainer/VBoxContainer"]
+margin_right = 500.0
+margin_bottom = 80.0
+custom_fonts/font = ExtResource( 10 )
+custom_styles/normal = ExtResource( 9 )
+text = "Keep Going "
+
+[node name="Sprite" type="Sprite" parent="CanvasLayer/Control/CenterContainer/VBoxContainer/PlayMore"]
+position = Vector2( 444, 41 )
+texture = ExtResource( 8 )
+
+[node name="Continue" type="Button" parent="CanvasLayer/Control/CenterContainer/VBoxContainer"]
+visible = false
+margin_top = 84.0
+margin_right = 500.0
+margin_bottom = 164.0
+custom_fonts/font = ExtResource( 10 )
+custom_styles/normal = ExtResource( 9 )
+text = "Continue"
+
+[node name="BackButton" type="Button" parent="CanvasLayer/Control/CenterContainer/VBoxContainer"]
+pause_mode = 2
+margin_top = 84.0
+margin_right = 500.0
+margin_bottom = 164.0
 rect_min_size = Vector2( 500, 0 )
-custom_fonts/font = SubResource( 9 )
-custom_styles/normal = SubResource( 10 )
+custom_fonts/font = ExtResource( 10 )
+custom_styles/normal = ExtResource( 9 )
 text = "Back"
 
 [node name="CountDown" type="Node2D" parent="CanvasLayer"]
@@ -256,9 +277,30 @@ anims/countdown = SubResource( 7 )
 
 [node name="Timer" type="Timer" parent="."]
 
+[node name="AdMob" type="Node" parent="."]
+pause_mode = 2
+script = ExtResource( 11 )
+banner_size = "FULL_BANNER"
+rewarded_id = "ca-app-pub-9847843636021073/7589383231"
+is_personalized = false
+max_ad_content_rate = "PG"
+
+[node name="AdTimer" type="Timer" parent="."]
+pause_mode = 2
+wait_time = 5.0
+
+[node name="CountdownPlayer" type="AudioStreamPlayer2D" parent="."]
+
+[connection signal="pressed" from="TouchScreenButton" to="HeroBlock" method="_on_jump_pressed"]
 [connection signal="game_over" from="HeroBlock" to="." method="_on_HeroBlock_game_over"]
 [connection signal="update_countdown" from="HeroBlock" to="." method="_on_HeroBlock_update_countdown"]
 [connection signal="update_lives" from="HeroBlock" to="." method="_on_HeroBlock_update_lives"]
 [connection signal="update_points" from="HeroBlock" to="." method="_on_HeroBlock_update_points"]
-[connection signal="pressed" from="CanvasLayer/Control/BackButton" to="." method="_on_BackButton_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/PlayMore" to="." method="_on_PlayMore_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/Continue" to="." method="_on_Continue_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/BackButton" to="." method="_on_BackButton_pressed"]
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[connection signal="rewarded_video_closed" from="AdMob" to="." method="_on_AdMob_rewarded_video_closed"]
+[connection signal="rewarded_video_loaded" from="AdMob" to="." method="_on_AdMob_rewarded_video_loaded"]
+[connection signal="timeout" from="AdTimer" to="." method="_on_AdTimer_timeout"]
+[connection signal="finished" from="CountdownPlayer" to="." method="_on_CountdownPlayer_finished"]
